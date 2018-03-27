@@ -1,0 +1,22 @@
+{
+  "name": "my-util",
+  "version": "0.0.1",
+  "description": "this is a collection of util functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangmengHB/util.git"
+  },
+  "keywords": [
+    "util"
+  ],
+  "author": "Meng Wang <wangmeng_hb@163.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wangmengHB/util/issues"
+  },
+  "homepage": "https://github.com/wangmengHB/util#readme"
+}
