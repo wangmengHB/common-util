@@ -10,7 +10,7 @@ export const no = () => false
 /**
  * Return same value
  */
-export const identity = (_) => _
+export const identity = _ => _
 
 // these helpers produces better vm code in JS engines due to their
 // explicitness and function inlining
