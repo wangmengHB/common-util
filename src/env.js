@@ -22,8 +22,17 @@ if (inBrowser) {
       }
     }))  
     window.addEventListener('test-passive', null, opts)
-  // The above expression is NOT aync, and event name can be anything else 
-  // If browser supports passive event, it will try to get opts's passive property
-  // Otherwise, it will treat opts as boolean.  so the getter of opts are never touched 
+// The above expression is NOT aync, and event name can be anything else 
+// If browser supports passive event, it will try to get opts's passive property
+// Otherwise, it will treat opts as boolean.  so the getter of opts are never touched 
   } catch (e) {}
 }
+
+export function isNative (Ctor) {
+  return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
+}
+
+export const hasSymbol =
+  typeof Symbol !== 'undefined' && isNative(Symbol) &&
+  typeof Reflect !== 'undefined' && isNative(Reflect.ownKeys)
+
