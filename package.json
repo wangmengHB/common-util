@@ -1,6 +1,6 @@
 {
   "name": "my-util",
-  "version": "0.0.1",
+  "version": "0.0.1-rc.1",
   "description": "this is a collection of util functions",
   "main": "index.js",
   "scripts": {
@@ -18,5 +18,11 @@
   "bugs": {
     "url": "https://github.com/wangmengHB/util/issues"
   },
-  "homepage": "https://github.com/wangmengHB/util#readme"
+  "homepage": "https://github.com/wangmengHB/util#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  }
 }
