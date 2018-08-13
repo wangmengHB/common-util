@@ -50,13 +50,10 @@ observe(data, true)
 
 window.__vm = vm
 
-function cb (newVal, oldVal) {
-    console.log(
-        `new: ${newVal}; old: ${oldVal}`
-    )
-}
-
 const unWatch = createWatcher(vm, 'data.x', watch.x)
+const unWatch2 = createWatcher(vm, 'data.y', watch.y)
+
 
 vm.data.x = 99
+vm.data.y = 85
 
