@@ -1,4 +1,4 @@
-
+import {def} from './helper'
 
 // Browser environment sniffing
 export const inBrowser = typeof window !== 'undefined'
@@ -35,4 +35,32 @@ export function isNative (Ctor) {
 export const hasSymbol =
   typeof Symbol !== 'undefined' && isNative(Symbol) &&
   typeof Reflect !== 'undefined' && isNative(Reflect.ownKeys)
+
+
+export const hasProto = '__proto__' in {}
+
+export const linkProto = hasProto? protoAugment: copyAugment
+
+// helpers
+
+/**
+ * Augment an target Object or Array by intercepting
+ * the prototype chain using __proto__
+ */
+function protoAugment (target, src, keys) {
+  target.__proto__ = src
+}
+
+/**
+ * Augment an target Object or Array by defining
+ * hidden properties.
+ */
+
+function copyAugment (target, src, keys) {
+  for (let i = 0, l = keys.length; i < l; i++) {
+    const key = keys[i]
+    def(target, key, src[key])
+  }
+}
+
 
