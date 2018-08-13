@@ -1,5 +1,4 @@
 import {isObject} from '../util/index'
-import VNode from '../vdom/vnode'
 
 const seenObjects = new Set()
 /**

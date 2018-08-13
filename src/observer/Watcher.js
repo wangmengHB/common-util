@@ -29,7 +29,7 @@ export default class Watcher {
         if (isRenderWatcher) {
             vm._watcher = this
         }
-        vm._watchers.push(this)
+        (vm._watchers = vm._watchers || []).push(this)
         // options
         if (options) {
             this.deep = !!options.deep

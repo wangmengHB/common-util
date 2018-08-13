@@ -13,7 +13,7 @@ const config = merge(base, {
         contentBase: false, 
         compress: true,
         host: '0.0.0.0',
-        port: 8080,
+        port: 8081,
         useLocalIp: true,
         open: true,
         overlay: { 
