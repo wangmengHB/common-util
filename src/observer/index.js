@@ -85,8 +85,7 @@ export function observe (value, asRootData = false) {
         value.__ob__ instanceof Observer
     ) {
         ob = value.__ob__
-    } else if (
-        shouldObserve &&
+    } else if (shouldObserve &&
         (Array.isArray(value) || isPlainObject(value)) &&
         Object.isExtensible(value)
     ) {
@@ -131,10 +130,10 @@ export function defineReactive (
             if (Dep.target) {
                 dep.depend()
                 if (childOb) {
-                childOb.dep.depend()
-                if (Array.isArray(value)) {
-                    dependArray(value)
-                }
+                    childOb.dep.depend()
+                    if (Array.isArray(value)) {
+                        dependArray(value)
+                    }
                 }
             }
             return value
