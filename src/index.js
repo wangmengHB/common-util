@@ -45,6 +45,17 @@ const watch = {
     }
 }
 
+function render() {
+    console.log(
+        `
+        render function:
+        x: ${vm.data.x}
+        y: ${vm.data.y}
+        z: ${vm.data.z}
+        `
+    )
+}
+
 
 observe(data, true)
 
@@ -52,6 +63,8 @@ window.__vm = vm
 
 const unWatch = createWatcher(vm, 'data.x', watch.x)
 const unWatch2 = createWatcher(vm, 'data.y', watch.y)
+const unWatch3 = createWatcher(vm, render, ()=>{}, null, true)
+
 
 
 vm.data.x = 99
