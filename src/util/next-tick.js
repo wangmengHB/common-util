@@ -30,7 +30,6 @@ let useMacroTask = false
 // Technically setImmediate should be the ideal choice, but it's only available
 // in IE. The only polyfill that consistently queues the callback after all DOM
 // events triggered in the same loop is by using MessageChannel.
-/* istanbul ignore if */
 if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
     macroTimerFunc = () => {
         setImmediate(flushCallbacks)
@@ -41,10 +40,10 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
     MessageChannel.toString() === '[object MessageChannelConstructor]'
 )) {
     const channel = new MessageChannel()
-    const port = channel.port2
+    const port2 = channel.port2
     channel.port1.onmessage = flushCallbacks
     macroTimerFunc = () => {
-        port.postMessage(1)
+        port2.postMessage(1)
     }
 } else {
     macroTimerFunc = () => {
@@ -69,6 +68,30 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
     microTimerFunc = macroTimerFunc
 }
 
+export function nextTick(cb, ctx) {
+    if (typeof cb !== 'function') {
+        throw new Error('the param of nextTick must be a function')
+    }
+
+    callbacks.push(() => {
+        try {
+            cb.call(ctx)
+        } catch (e) {
+            handleError(e, ctx, 'nextTick')
+        }
+    })
+
+    if (!pending) {
+        pending = true
+        if (useMacroTask) {
+            macroTimerFunc()
+        } else {
+            microTimerFunc()
+        }
+    }
+}
+
+
 /**
  * Wrap a function so that if any code inside triggers state change,
  * the changes are queued using a Task instead of a MicroTask.
@@ -80,32 +103,4 @@ export function withMacroTask(fn) {
         useMacroTask = false
         return res
     })
-}
-
-export function nextTick(cb, ctx) {
-    let _resolve
-    callbacks.push(() => {
-        if (cb) {
-            try {
-                cb.call(ctx)
-            } catch (e) {
-                handleError(e, ctx, 'nextTick')
-            }
-        } else if (_resolve) {
-            _resolve(ctx)
-        }
-    })
-    if (!pending) {
-        pending = true
-        if (useMacroTask) {
-            macroTimerFunc()
-        } else {
-            microTimerFunc()
-        }
-    }
-    if (!cb && typeof Promise !== 'undefined') {
-        return new Promise(resolve => {
-            _resolve = resolve
-        })
-    }
 }

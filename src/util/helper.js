@@ -215,6 +215,18 @@ export function toObject (arr) {
 }
 
 
+/*
+  check if value is changed
+*/
+export function equal (a, b) {
+  if (a === b) {
+    return true
+  }
+  if (isNaN(a) && isNaN(b)) {
+    return true
+  }
+  return false
+}
 
 
 

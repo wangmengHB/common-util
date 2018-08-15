@@ -1,7 +1,7 @@
 // test case
+import {noop} from './util'
 
-import {defineReactive, observe} from './observer'
-import Watcher from './observer/Watcher'
+import {defineReactive, observe, Watcher} from './observer'
 
 
 function createWatcher (vm, expOrFn, handler) {
@@ -63,7 +63,7 @@ window.__vm = vm
 
 const unWatch = createWatcher(vm, 'data.x', watch.x)
 const unWatch2 = createWatcher(vm, 'data.y', watch.y)
-const unWatch3 = createWatcher(vm, render, ()=>{}, null, true)
+const unWatch3 = createWatcher(vm, render, noop, null, true)
 
 
 
