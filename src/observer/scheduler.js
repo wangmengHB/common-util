@@ -5,7 +5,6 @@ export const MAX_UPDATE_COUNT = 100
 const queue = []        // wathers
 const activatedChildren = []
 let has = {}
-let circular = {}
 let waiting = false
 let flushing = false
 let index = 0
@@ -16,7 +15,6 @@ let index = 0
 function resetSchedulerState () {
     index = queue.length = activatedChildren.length = 0
     has = {}
-    circular = {}
     waiting = flushing = false
 }
 
@@ -47,15 +45,6 @@ function flushSchedulerQueue () {
         id = watcher.id
         has[id] = null
         watcher.run()
-        // in dev build, check and stop circular updates.
-        if (has[id] != null) {
-            circular[id] = (circular[id] || 0) + 1
-            if (circular[id] > MAX_UPDATE_COUNT) {
-                console.error('you may have an infinite loop')
-                throw new Error('infinite loop')    
-                break
-            }
-        }
     }
 
     // keep copies of post queues before resetting state
@@ -117,8 +106,17 @@ export function queueWatcher (watcher) {
         if (!flushing) {
             queue.push(watcher)
         } else {
-            // if already flushing, splice the watcher based on its id
-            // if already past its id, it will be run next immediately.
+        /*
+        在flushSchedulerQueue函数中遍历watcher任务时，
+        会首先调用到每个watcher的watcher.before 方法，
+        而watcher.before方法中有可能会继续调用queueWatcher (watcher), 
+        这个else分支就处理这种case.
+        这里的index表示：当前queue运行的位置，
+        根据新增watcher的id的数值大小，
+        将新增的watcher在剩余队列（不包括当前watcher）中插入正确位置，
+        如果新增watcher的id已经错过了，则就在(index+1)的位置插入, 
+        当前watcher执行完了，下一个任务立即执行.
+        */
             let i = queue.length - 1
             while (i > index && queue[i].id > watcher.id) {
                 i--

@@ -26,28 +26,30 @@ export default class Watcher {
         isRenderWatcher = false
     ) {
         this.vm = vm
+        this.cb = cb
+        this.id = ++uid                 // uid for batching
+        this.active = true
+        this.deps = []
+        this.newDeps = []
+        this.depIds = new Set()
+        this.newDepIds = new Set()
+        
         if (isRenderWatcher) {
             vm._watcher = this
         }
         (vm._watchers = vm._watchers || []).push(this)
         // options
         if (options) {
-            this.deep = !!options.deep
-            this.user = !!options.user
+            this.deep = !!options.deep        
             this.computed = !!options.computed
             this.sync = !!options.sync
             this.before = options.before
         } else {
-            this.deep = this.user = this.computed = this.sync = false
+            this.deep = this.computed = this.sync = false
         }
-        this.cb = cb
-        this.id = ++uid // uid for batching
-        this.active = true
-        this.dirty = this.computed // for computed watchers
-        this.deps = []
-        this.newDeps = []
-        this.depIds = new Set()
-        this.newDepIds = new Set()
+        
+        this.dirty = this.computed      // for computed watchers
+        
         this.expression = expOrFn.toString()
 
         // parse expression for getter
@@ -56,7 +58,7 @@ export default class Watcher {
         } else {
             this.getter = parsePath(expOrFn)
             if (typeof this.getter !== 'function') {
-                throw new Error('expOrFn is not vailid')
+                throw new Error('expOrFn path is not vailid')
             }
         }
         if (this.computed) {
@@ -77,11 +79,7 @@ export default class Watcher {
         try {
             value = this.getter.call(vm, vm)
         } catch (e) {
-            if (this.user) {
-                handleError(e, vm, `getter for watcher "${this.expression}"`)
-            } else {
-                throw e
-            }
+            throw e
         } finally {
             // "touch" every property so they are all tracked as
             // dependencies for deep watching
@@ -183,15 +181,11 @@ export default class Watcher {
             const oldValue = this.value
             this.value = value
             this.dirty = false
-            if (this.user) {
-                try {
-                    cb.call(this.vm, value, oldValue)
-                } catch (e) {
-                    handleError(e, this.vm, `callback for watcher "${this.expression}"`)
-                }
-            } else {
+            try {
                 cb.call(this.vm, value, oldValue)
-            }
+            } catch (e) {
+                handleError(e, this.vm, `callback for watcher "${this.expression}"`)
+            }            
         }
     }
 
