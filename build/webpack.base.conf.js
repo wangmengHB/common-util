@@ -14,13 +14,19 @@ module.exports = {
         library: 'CommonUtil'
     },
     module: {
-        rules: [{
+        rules: [
+          {
             test: /\.js$/,
             loader: 'babel-loader',
             include: [
                 path.resolve(__dirname, '../src')
             ]
-        }]
+          },
+          {
+            test: /\.less$/,
+            use: ['style-loader', 'css-loader', 'less-loader']
+          }
+        ]
     },
     node: {
         setImmediate: false,
