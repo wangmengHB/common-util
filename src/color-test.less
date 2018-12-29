@@ -9,3 +9,19 @@
     margin: 5px;
   }
 }
+
+.testMixin() {
+  @functions: `(function(){
+    this.testFun = function() {
+      return '#FFF';
+    }
+    return '';
+
+  })()`
+}
+.testMixin();
+
+
+.test {
+  background-color: color(~`testFun()`);
+}
