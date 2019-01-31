@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "strictNullChecks": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -8,6 +9,7 @@
     "noUnusedLocals": true,
     "noImplicitAny": true,
     "target": "es6",
+    "module": "commonjs",
     "lib": [
       "dom",
       "es7"
