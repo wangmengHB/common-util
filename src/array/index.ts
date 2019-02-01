@@ -8,7 +8,7 @@ export function getCombination(source: Array<any> = []): Array<Array<any>> {
   if (!Array.isArray(source)) {
     return [];
   }
-  const arr = compact(source);
+  const arr = uniqueArray(source);
   if (arr.length === 0) {
     return [];
   }
@@ -30,7 +30,7 @@ export function getPermutation(source: Array<any> = []) : Array<Array<any>> {
   if (!Array.isArray(source)) {
     return [];
   }
-  const arr = compact(source);
+  const arr = uniqueArray(source);
   if (arr.length === 0) {
     return [];
   }
@@ -59,7 +59,7 @@ export function getAllCombinationAndPermutation (source: Array<any> = []): Array
   if (!Array.isArray(source)) {
     return [];
   }
-  const arr = compact(source);
+  const arr = uniqueArray(source);
   if (arr.length === 0) {
     return [];
   }
@@ -79,7 +79,7 @@ export function getAllCombinationAndPermutation (source: Array<any> = []): Array
 /*
   数组去重, 并且去掉 null 和 undefined
 */
-export function compact(arr: Array<any>) : Array<any> {
+export function uniqueArray(arr: Array<any>) : Array<any> {
   let res: Array<any> = [];
   if (!Array.isArray(arr)) {
     return [];

@@ -1,13 +1,13 @@
-import { compact, getCombination, getPermutation, getAllCombinationAndPermutation} from '../src/array/index';
+import { uniqueArray, getCombination, getPermutation, getAllCombinationAndPermutation} from '../src/array/index';
 import { factorial } from '../src/helper';
 
 
 describe('array', () => {
-  it('compact array', () => {
+  it('uniqueArray array', () => {
     const source = [1,2,3,null,,5,6,7, undefined, 1,2,3,,,,7];
     const target = [1,2,3,5,6,7];
 
-    expect(compact(source)).toEqual(target);
+    expect(uniqueArray(source)).toEqual(target);
 
     
 
@@ -57,7 +57,7 @@ describe('array', () => {
       return res;
     })).toBe(true);
     // 每个排列应该应该各不相同
-    expect(compact(res.map(item => item.join(''))).length).toEqual(res.length);
+    expect(uniqueArray(res.map(item => item.join(''))).length).toEqual(res.length);
     // 排列的个数应该为 n！
     expect(res.length).toEqual(factorial(source.length));
     
@@ -67,26 +67,19 @@ describe('array', () => {
   it('getAllCombinationAndPermutation', () => {
     const source = ['a', 'b', 'c', 'd'];
     const res = getAllCombinationAndPermutation(source);
-    console.log(res);
-
-    let supposedLength = source.length;
-    for (let i = source.length; i > 0; i-- ) {
-      let total = i;
-      for (let j = total - 1; j > 0; j--) {
-        supposedLength += factorial(total) /(factorial(j));
-      }
+    
+    let supposedLength = 0;
+    const total = source.length;
+    for (let i = 0; i < total; i++ ) {
+      supposedLength += factorial(total) /(factorial(i));
     }
-
-
-
+    
+    // 核对排列公式计算的个数是否一致，（n！）/(n-1)! + (n!)/(n-2)! + ... + (n!)/(0)!
     expect(res.length).toEqual(supposedLength);
-
-
-
+    // 核对结果的每一个元素应该都不相同
+    expect(uniqueArray(res.map(item => item.join())).length).toEqual(res.length);
 
   });
-
-
 
 
 })

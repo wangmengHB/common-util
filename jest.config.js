@@ -1,6 +1,5 @@
 
 module.exports = {
-  forceExit: true,
   verbose: true,
   testEnvironment: "node",
   transform: {
