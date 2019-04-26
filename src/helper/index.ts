@@ -1,6 +1,5 @@
 
 
-
 export function factorial(n: number): number {
   let num = Math.floor(n);
   if (isNaN(num)) {
@@ -22,6 +21,8 @@ export function factorial(n: number): number {
 export function isObject (obj: any) {
   return obj !== undefined && obj !== null && typeof obj === 'object'
 }
+
+
 
 
 /**

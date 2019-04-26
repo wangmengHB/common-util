@@ -4,7 +4,7 @@
   例如：['a', 'b'] --> [['a'], ['b'], ['a', 'b']]
 */
 
-export function getCombination(source: Array<any> = []): Array<Array<any>> {
+export function getAllCombination(source: Array<any> = []): Array<Array<any>> {
   if (!Array.isArray(source)) {
     return [];
   }
@@ -16,14 +16,14 @@ export function getCombination(source: Array<any> = []): Array<Array<any>> {
     return [arr];
   }
   let firstEl = arr[0];
-  let prevResult = getCombination(arr.slice(1));
+  let prevResult = getAllCombination(arr.slice(1));
   let currentResult = prevResult.map((x: any) => [].concat(firstEl, x));
   const res = [[firstEl]].concat(currentResult, prevResult);
   return res.sort((a: Array<any>, b: Array<any>) => a.length - b.length);
 }
 
 /*
-  计算一个数组内所有元素的排列可能，返回所有的结果是一个数组，包含所有的排列可能
+  计算一个数组内全部元素的排列可能，返回所有的结果是一个数组，包含所有的排列可能
   例如：['a', 'b'] --> [['a', 'b'], ['b', 'a']]
 */
 export function getPermutation(source: Array<any> = []) : Array<Array<any>> {
@@ -55,7 +55,7 @@ export function getPermutation(source: Array<any> = []) : Array<Array<any>> {
   计算一个数组内所有元素的排列组合可能，返回所有的结果是一个数组，包含所有元素的排列组合
   例如： ['a', 'b'] --> [['a'], ['b'], ['a', 'b'], ['b', 'a']]
 */
-export function getAllCombinationAndPermutation (source: Array<any> = []): Array<Array<any>> {
+export function getAllPermutation (source: Array<any> = []): Array<Array<any>> {
   if (!Array.isArray(source)) {
     return [];
   }
@@ -67,7 +67,7 @@ export function getAllCombinationAndPermutation (source: Array<any> = []): Array
     return [arr];
   }
   let res: Array<any> = [];
-  let comb = getCombination(arr);
+  let comb = getAllCombination(arr);
   comb.forEach((item: Array<any>) => {
     let perms = getPermutation(item);
     res = res.concat(perms);

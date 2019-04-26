@@ -23,6 +23,7 @@ function createColorBlock(colors) {
   for (let i = 0; i < colors.length; i++) {
     let ele = document.createElement('div');
     ele.style.backgroundColor = colors[i];
+    ele.style.color = '#fff';
     ele.className = "color";
     ele.innerText = i + 1; 
     container.appendChild(ele);

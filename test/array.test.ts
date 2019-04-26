@@ -1,4 +1,4 @@
-import { uniqueArray, getCombination, getPermutation, getAllCombinationAndPermutation} from '../src/array/index';
+import { uniqueArray, getAllCombination, getPermutation, getAllPermutation} from '../src/array/index';
 import { factorial } from '../src/helper';
 
 
@@ -9,14 +9,12 @@ describe('array', () => {
 
     expect(uniqueArray(source)).toEqual(target);
 
-    
-
   });
 
 
-  it('getCombination', () => {
+  it('getAllCombination', () => {
     const source = ['a', 'b', 'c', 'd'];
-    const res = getCombination(source);
+    const res = getAllCombination(source);
 
     expect(res).toContainEqual(['a']);
     expect(res).toContainEqual(['b']);
@@ -64,9 +62,9 @@ describe('array', () => {
   });
 
 
-  it('getAllCombinationAndPermutation', () => {
+  it('getAllPermutation', () => {
     const source = ['a', 'b', 'c', 'd'];
-    const res = getAllCombinationAndPermutation(source);
+    const res = getAllPermutation(source);
     
     let supposedLength = 0;
     const total = source.length;
