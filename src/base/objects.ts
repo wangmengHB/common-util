@@ -183,6 +183,7 @@ export function getOrDefault<T, R>(obj: T, fn: (obj: T) => R | undefined, defaul
 
 type obj = { [key: string]: any;};
 
+// 只能获取平铺对象的差异。
 export function distinct(base: obj, target: obj): obj {
   const result = Object.create(null);
   if (!base || !target) {
