@@ -66,6 +66,25 @@ export function isEmptyObject(obj: any): obj is any {
   return true;
 }
 
+export function withNullAsUndefined<T>(x: T | null): T | undefined {
+  return x === null? undefined: x;
+}
+
+export function withUndefinedAsNull<T>(x: T | undefined): T | null {
+  return isUndefined(x)? null: x;
+}
+
+// 这个方法有缺陷，只能返回原型链上的属性名称 ！！！
+export function getAllPropertyNames(obj: object): string[] {
+  let res: string[] = [];
+  let proto = Object.getPrototypeOf(obj);
+  while(Object.prototype !== proto) {
+    res = res.concat(Object.getOwnPropertyNames(proto));
+    proto = Object.getPrototypeOf(proto);
+  }
+  return res;
+}
+
 export type TypeConstraint = string | Function;
 
 export function validateConstraint(arg: any, constraint: TypeConstraint | undefined): void {
@@ -102,21 +121,4 @@ export function validateConstraints(args: any[], constraints: Array<TypeConstrai
   }
 }
 
-export function withNullAsUndefined<T>(x: T | null): T | undefined {
-  return x === null? undefined: x;
-}
 
-export function withUndefinedAsNull<T>(x: T | undefined): T | null {
-  return isUndefined(x)? null: x;
-}
-
-// 这个方法有缺陷，只能返回原型链上的属性名称 ！！！
-export function getAllPropertyNames(obj: object): string[] {
-  let res: string[] = [];
-  let proto = Object.getPrototypeOf(obj);
-  while(Object.prototype !== proto) {
-    res = res.concat(Object.getOwnPropertyNames(proto));
-    proto = Object.getPrototypeOf(proto);
-  }
-  return res;
-}
