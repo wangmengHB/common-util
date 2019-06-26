@@ -7,7 +7,8 @@
     "build": "webpack --config ./build/webpack.prod.conf.js",
     "watch": "webpack --watch --config ./build/webpack.dev.conf.js",
     "dev": "webpack-dev-server --inline --progress --config ./build/webpack.dev.conf.js",
-    "test": "jest"
+    "test": "mocha",
+    "test1": "jest"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,14 @@
     "@babel/preset-typescript": "^7.1.0",
     "@babel/register": "^7.0.0",
     "@types/jest": "^23.3.13",
+    "@types/keytar": "^4.0.1",
+    "@types/minimist": "^1.2.0",
+    "@types/mocha": "2.2.39",
+    "@types/node": "^10.12.12",
+    "@types/semver": "^5.5.0",
+    "@types/sinon": "^1.16.36",
+    "@types/webpack": "^4.4.10",
+    "@types/winreg": "^1.2.30",
     "babel-jest": "^24.0.0",
     "babel-loader": "^7.1.5",
     "css-loader": "^2.1.0",
@@ -42,6 +51,7 @@
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5",
-    "webpack-merge": "^4.1.4"
+    "webpack-merge": "^4.1.4",
+    "mocha": "^2.2.5"
   }
 }
