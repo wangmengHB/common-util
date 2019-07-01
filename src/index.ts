@@ -34,34 +34,32 @@ let bucket: IDisposable[] = [];
 
 // let subscription =  doc.onDidChange(counter.onEvent, counter, bucket);
 
-debugger;
-let onDocDidChange = Event.debounce(doc.onDidChange, (prev: string[], cur) => {
-  if (!prev) {
-    prev = [cur];
-  } else if (prev.indexOf(cur) < 0) {
-    prev.push(cur);
-  }
-  return prev;
-}, 10);
 
-let count = 0;
+const emitter = new Emitter<number>();
+const event = emitter.event;
+const bufferedEvent = Event.buffer(event);
 
-debugger;
-onDocDidChange(keys => {
-  count++;
-  console.log('count: ', count);
-  console.log('keys', keys);
-  if (count === 1) {
-    doc.setText('4');
-    console.log('count 1 keys', keys);
-  } else if (count === 2) {
-    console.log('count 2 keys', keys);
-  }
-});
+emitter.fire(1);
+emitter.fire(2);
+emitter.fire(3);
+// nothing...
 
-doc.setText('1');
-doc.setText('2');
-doc.setText('3');
+const listener = bufferedEvent(num => console.log(num));
+// 1, 2, 3
+
+emitter.fire(4);
+// 4
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -23,6 +23,15 @@ export interface EmitterOptions {
 
 type Listener<T> = [(e: T) => void, any] | ((e: T) => void);
 
+export interface IChainableEvent<T> {
+  event: Event<T>;
+  map<O>(fn: (i: T) => O): IChainableEvent<O>;
+
+}
+
+
+
+
 let _globalLeakWarningThreshold = -1;
 // for debug use
 export function setGlobalLeakWarningThreshold(n: number): IDisposable {
@@ -330,6 +339,71 @@ export namespace Event {
 
     return emitter.event;
   }
+
+  export function stopwatch<T>(event: Event<T>): Event<number> {
+    const start = new Date().getTime();
+    return map(once(event), _ => new Date().getTime() - start);
+  }
+
+  export function latch<T>(event: Event<T>): Event<T> {
+    let firstCall = true;
+    let cache: T;
+    return filter(event, value => {
+      const shouldEmit = firstCall || value !== cache;
+      firstCall = false;
+      cache = value;
+      return shouldEmit;
+    })
+  }
+
+  export function buffer<T>(event: Event<T>, nextTick = false, _buffer: T[] = []): Event<T> {
+    let buffer: T[] | null = _buffer.slice();
+    let listener: IDisposable | null = event(e => {
+      if (buffer) {
+        buffer.push(e);
+      } else {
+        emitter.fire(e);
+      }
+    });
+
+    const flush = () => {
+      if (buffer) {
+        buffer.forEach(e => emitter.fire(e));
+      }
+      buffer = null;
+    }
+
+    const emitter = new Emitter<T>({
+      onFirstListenerAdd() {
+        if (!listener) {
+          listener = event(e => emitter.fire(e));
+        }
+      },
+      onFirstListenerDidAdd() {
+        if (buffer) {
+          if (nextTick) {
+            setTimeout(flush);
+          } else {
+            flush();
+          }
+        }
+      },
+      onLastListenerRemove() {
+        if (listener) {
+          listener.dispose();
+        }
+        listener = null;
+      }
+    });
+
+    return emitter.event;
+
+  }
+
+
+
+
+
 
 
 }
