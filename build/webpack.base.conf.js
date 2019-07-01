@@ -4,7 +4,7 @@ const path = require('path')
 module.exports = {
     context: path.resolve(__dirname, '../'),
     entry: {
-        'common-util': path.resolve(__dirname, '../src/index.js')
+        'common-util': path.resolve(__dirname, '../src/index.ts')
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
@@ -13,13 +13,23 @@ module.exports = {
         libraryTarget: 'umd',
         library: 'CommonUtil'
     },
+    resolve: {
+      extensions: ['.ts', '.js', '.json']
+    },
     module: {
         rules: [
           {
-            test: /\.js$/,
-            loader: 'babel-loader',
+            test: /\.(js|ts)$/,
             include: [
-                path.resolve(__dirname, '../src')
+              path.resolve(__dirname, '../src')
+            ],
+            use: [
+              {
+                loader: 'babel-loader',
+              },
+              {
+                loader: 'ts-loader',
+              }
             ]
           },
           {

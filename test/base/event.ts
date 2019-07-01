@@ -45,9 +45,9 @@ suite('Event', function() {
 
 
 
-  })
+  });
 
 
 
-})
+});
 
