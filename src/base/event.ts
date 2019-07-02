@@ -2,16 +2,34 @@ import { onUnexpectedError } from './errors';
 import { once as onceFn } from './functional';
 import { Disposable, IDisposable, toDisposable, combinedDisposable, DisposableStore, isDisposable } from './lifecycle';
 import { LinkedList } from './linkedList';
-import { Iterator } from './iterator';
+
+/*
+  interface and types:
+
+  Event<T>类型函数：
+    @param1: 需要注册的任意函数，该函数的输入参数类型为 T
+    @param2: 该函数的可能存在this上下文
+    @param3: 传入一个 IDisposable 的收集数组，用于销毁管理
+  函数返回 IDisposable 对象，执行 .dispose() 完成注册销毁。
+
+  Listener类型：
+    存储注册函数和可能存在的上下文对象结构，它的结构二选一：1. 函数，2. 【函数，this上下文】
+
+  EmitterOptions接口：
+    onFirstListenerAdd:
+    onFirstListenerDidAdd:
+    onListernDidAdd:
+    onLastListenerRemove: 最后一个注册函数移除时触发，
+
+    leakWarningThreshold： 调试用的，可以忽略。
+*/
 
 
-/**
- * To an event a function with one or zero parameters
- * can be subscribed. The event is the subscriber function itself.
- */
 export interface Event<T> {
   (listener: (e: T) => any, thisArgs?: any, disposables?: IDisposable[] | DisposableStore): IDisposable;
 }
+
+type Listener<T> = [(e: T) => void, any] | ((e: T) => void);
 
 export interface EmitterOptions {
   onFirstListenerAdd?: Function;
@@ -21,15 +39,27 @@ export interface EmitterOptions {
   leakWarningThreshold?: number;
 }
 
-type Listener<T> = [(e: T) => void, any] | ((e: T) => void);
+
 
 export interface IChainableEvent<T> {
   event: Event<T>;
   map<O>(fn: (i: T) => O): IChainableEvent<O>;
-
+  forEach(fn: (i: T) => void): IChainableEvent<T>;
+  filter(fn: (i: T) => boolean): IChainableEvent<T>;
+  reduce<R>(merge: (last: R | undefined, event: T) => R, initial?: R): IChainableEvent<R>;
+  latch(): IChainableEvent<T>;
+  on(listener: (e: T) => any, thisArgs?: any, disposables?: IDisposable[]): IDisposable;
+  once(listener: (e: T) => any, thisArgs?: any, disposables?: IDisposable[]): IDisposable;
 }
 
+export interface NodeEventEmitter {
+  on(event: string | symbol, listener: Function): this;
+  removeListener(event: string | symbol, listener: Function): this;
+}
 
+export interface IWaitUntil {
+  waitUntil(thenable: Promise<any>): void;
+}
 
 
 let _globalLeakWarningThreshold = -1;
@@ -101,7 +131,6 @@ class LeakageMonitor {
   }
 
 }
-
 
 export class Emitter<T> {
   private static readonly _noop = function() {};
@@ -211,18 +240,226 @@ export class Emitter<T> {
     this._disposed = true;
   }
 
+}
+
+export class PauseableEmitter<T> extends Emitter<T> {
+  private _isPaused = 0;
+  private _eventQueue = new LinkedList<T>();
+  private _mergeFn?: (input: T[]) => T;
+
+  constructor(options?: EmitterOptions & { merge?: (input: T[]) => T}) {
+    super(options);
+    this._mergeFn = options && options.merge;
+  }
+
+  pause(): void {
+    this._isPaused++;
+  }
+
+  resume(): void {
+    if (this._isPaused === 0) {
+      return;
+    }
+    --this._isPaused;
+    if (this._isPaused === 0) {
+      if (this._mergeFn) {
+        const events = this._eventQueue.toArray();
+        this._eventQueue.clear();
+        super.fire(this._mergeFn(events));
+      } else {
+        while(!this._isPaused && this._eventQueue.size !== 0) {
+          super.fire(this._eventQueue.shift()!);
+        }
+      }
+    }
+  }
+
+  fire(event: T): void {
+    if (!this._listeners) {
+      return;
+    }
+    if (this._isPaused !== 0) {
+      this._eventQueue.push(event);
+    } else {
+      super.fire(event);
+    }
+  }
+
+}
+
+export class AsyncEmitter<T extends IWaitUntil> extends Emitter<T> {
+  private _asyncDeliveryQueue: [Listener<T>, T, Promise<any>[]][];
+
+  async fireAsync(eventFn: (thenables: Promise<any>[], listener: Function) => T): Promise<void> {
+    if (!this._listeners) {
+      return;
+    }
+    if (!this._asyncDeliveryQueue) {
+      this._asyncDeliveryQueue = [];
+    }
+    for (let iter = this._listeners.iterator(), e = iter.next(); !e.done; e = iter.next()) {
+      const thenables: Promise<void>[] = [];
+      this._asyncDeliveryQueue.push([e.value, eventFn(thenables, typeof e.value === 'function'? e.value: e.value[0]), thenables]);
+    }
+    while(this._asyncDeliveryQueue.length > 0) {
+      const [listener, event, thenables] = this._asyncDeliveryQueue.shift()!;
+      try {
+        if (typeof listener === 'function') {
+          listener.call(undefined, event);
+        } else {
+          listener[0].call(listener[1], event);
+        }
+      } catch (e) {
+        onUnexpectedError(e);
+        continue;
+      }
+      Object.freeze(thenables);
+      await Promise.all(thenables);
+    }
+  }
+}
+
+export class EventMultiplexer<T> implements IDisposable {
+  private readonly emitter: Emitter<T>;
+  private hasListeners = false;
+  private events: {event: Event<T>; listener: IDisposable | null;}[] = [];
+
+  constructor() {
+    this.emitter = new Emitter<T>({
+      onFirstListenerAdd: () => this.onFirstListenerAdd(),
+      onLastListenerRemove: () => this.onLastListenerRemove(),
+    })
+  }
+
+  get event(): Event<T> {
+    return this.emitter.event;
+  }
+
+  dispose() {
+    this.emitter.dispose();
+  }
+
+  add(event: Event<T>): IDisposable {
+    const e = { event: event, listener: null};
+    this.events.push(e);
+    if (this.hasListeners) {
+      this.hook(e);
+    }
+    const dispose = () => {
+      if (this.hasListeners) {
+        this.unhook(e);
+      }
+      const idx = this.events.indexOf(e);
+      this.events.splice(idx, 1);
+    }
+
+    return toDisposable(onceFn(dispose));
+  }
+
+  private onFirstListenerAdd(): void {
+    this.hasListeners = true;
+    this.events.forEach(e => this.hook(e));
+  }
+
+  private onLastListenerRemove(): void {
+    this.hasListeners = false;
+    this.events.forEach(e => this.unhook(e));
+  }
+
+  private hook(e: {event: Event<T>; listener: IDisposable | null;}): void {
+    e.listener = e.event(r => this.emitter.fire(r));
+  }
+
+  private unhook(e: {event: Event<T>; listener: IDisposable | null;}): void {
+    if (e.listener) {
+      e.listener.dispose();
+    }
+    e.listener = null;
+  }
 
 }
 
 
+/**
+ * The EventBufferer is useful in situations in which you want
+ * to delay firing your events during some code.
+ * You can wrap that code and be sure that the event will not
+ * be fired during that wrap.
+ *
+ * ```
+ * const emitter: Emitter;
+ * const delayer = new EventBufferer();
+ * const delayedEvent = delayer.wrapEvent(emitter.event);
+ *
+ * delayedEvent(console.log);
+ *
+ * delayer.bufferEvents(() => {
+ *   emitter.fire(); // event will not be fired yet
+ *                  // emitter.fire here will be fired together at last
+ * });
+ *
+ * // event will only be fired at this point
+ * ```
+ */
 
+export class EventBufferer {
+  private buffers: Function[][] = [];
 
+  wrapEvent<T>(event: Event<T>): Event<T> {
+    return (listener, thisArgs?, disposables?) => {
+      return event(i => {
+        const buffer = this.buffers[this.buffers.length - 1];
+        if (buffer) {
+          buffer.push(() => listener.call(thisArgs, i));
+        } else {
+          listener.call(thisArgs, i);
+        }
+      }, undefined, disposables);
+    }
+  }
 
+  bufferEvents<R = void>(fn: () => R): R {
+    const buffer: Array<() => R> = [];
+    this.buffers.push(buffer);
+    const r = fn();
+    this.buffers.pop();
+    buffer.forEach(flush => flush());
+    return r;
+  }
+  
+}
 
+export class Relay<T> implements IDisposable {
+  private listening = false;
+  private inputEvent: Event<T> = Event.None;
+  private inputEventListener: IDisposable = Disposable.None;
 
+  private emitter = new Emitter<T>({
+    onFirstListenerAdd: () => {
+      this.listening = true;
+      this.inputEventListener = this.inputEvent(this.emitter.fire, this.emitter);
+    },
+    onLastListenerRemove: () => {
+      this.listening = false;
+      this.inputEventListener.dispose();
+    }
+  });
 
+  readonly event: Event<T> = this.emitter.event;
 
+  set input(event: Event<T>) {
+    this.inputEvent = event;
+    if (this.listening) {
+      this.inputEventListener.dispose();
+      this.inputEventListener = this.inputEvent(this.emitter.fire, this.emitter);
+    }
+  }
 
+  dispose() {
+    this.inputEventListener.dispose();
+    this.emitter.dispose();
+  }
+}
 
 
 export namespace Event {
@@ -401,9 +638,69 @@ export namespace Event {
   }
 
 
+  class ChainableEvent<T> implements IChainableEvent<T> {
+    constructor(readonly event: Event<T>) {}
 
+    map<O>(fn: (i: T) => O): IChainableEvent<O> {
+      return new ChainableEvent(map(this.event, fn));
+    }
 
+    forEach(fn: (i: T) => void): IChainableEvent<T> {
+      return new ChainableEvent(forEach(this.event, fn));
+    }
 
+    filter(fn: (i: T) => boolean): IChainableEvent<T> {
+      return new ChainableEvent(filter(this.event, fn));
+    }
 
+    reduce<R>(merge: (last: R | undefined, event: T) => R, initial?: R): IChainableEvent<R> {
+      return new ChainableEvent(reduce(this.event, merge, initial));
+    }
+
+    latch(): IChainableEvent<T> {
+      return new ChainableEvent(latch(this.event));
+    }
+
+    on(listener: (e: T) => any, thisArgs: any, disposables?: IDisposable[]) {
+      return this.event(listener, thisArgs, disposables);
+    }
+
+    once(listener: (e: T) => any, thisArgs: any, disposables?: IDisposable[]) {
+      return once(this.event)(listener, thisArgs, disposables);
+    }
+
+  }
+
+  export function chain<T>(event: Event<T>): IChainableEvent<T> {
+    return new ChainableEvent(event);
+  }
+
+  export function fromNodeEventEmitter<T>(emitter: NodeEventEmitter, eventName: string, map: (...args: any[]) => T = id => id): Event<T> {
+    const fn = (...args: any[]) => result.fire(map(...args));
+    const onFirstListenerAdd = () => emitter.on(eventName, fn);
+    const onLastListenerRemove = () => emitter.removeListener(eventName, fn);
+    const result = new Emitter<T>({ onFirstListenerAdd, onLastListenerRemove});
+    return result.event;
+  }
+
+  export function fromPromise<T = any>(promise: Promise<T>): Event<undefined> {
+    const emitter = new Emitter<undefined>();
+    let shouldEmit = false;
+    promise
+      .then(undefined, () => null)
+      .then(() => {
+        if (!shouldEmit) {
+          setTimeout(() => emitter.fire(undefined), 0);
+        } else {
+          emitter.fire(undefined);
+        }
+      });
+    shouldEmit = true;
+    return emitter.event;
+  }
+
+  export function toPromise<T>(event: Event<T>): Promise<T> {
+    return new Promise(c => once(event)(c));
+  }
 
 }

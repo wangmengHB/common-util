@@ -1,5 +1,5 @@
 
-import {Event, Emitter} from './base/event';
+import {Event, Emitter, AsyncEmitter, PauseableEmitter, EventMultiplexer, EventBufferer, Relay, IWaitUntil} from './base/event';
 import { IDisposable } from './base/lifecycle';
 
 
@@ -34,21 +34,54 @@ let bucket: IDisposable[] = [];
 
 // let subscription =  doc.onDidChange(counter.onEvent, counter, bucket);
 
+interface E extends IWaitUntil {
+  foo: number;
+}
+let events: number[] = [];
+let done = false;
+let emitter = new AsyncEmitter<E>();
 
-const emitter = new Emitter<number>();
-const event = emitter.event;
-const bufferedEvent = Event.buffer(event);
+// e1
+emitter.event(e => {
+  e.waitUntil(timeout(10).then(async _ => {
+    if (e.foo === 1) {
+      await emitter.fireAsync(thenables => ({
+        foo: 2,
+        waitUntil(t) {
+          thenables.push(t);
+        }
+      }));
+      console.log(JSON.stringify(events));
+      done = true;
+    }
+  }));
+});
 
-emitter.fire(1);
-emitter.fire(2);
-emitter.fire(3);
-// nothing...
+// e2
+emitter.event(e => {
+  events.push(e.foo);
+  e.waitUntil(timeout(7));
+});
 
-const listener = bufferedEvent(num => console.log(num));
-// 1, 2, 3
 
-emitter.fire(4);
-// 4
+debugger;
+
+emitter.fireAsync(thenables => ({
+  foo: 1,
+  waitUntil(t) {
+    thenables.push(t);
+  }
+}));
+console.log(done);
+
+
+function timeout(s: number) {
+  return new Promise((c, r) => {
+    setTimeout(c, s);
+  });
+}
+
+
 
 
 
