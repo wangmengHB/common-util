@@ -2,12 +2,12 @@
   "name": "common-util",
   "version": "0.0.1-rc.1",
   "description": "this is a collection of util functions",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
     "build": "webpack --config ./build/webpack.prod.conf.js",
     "watch": "webpack --watch --config ./build/webpack.dev.conf.js",
     "dev": "webpack-dev-server --inline --progress --config ./build/webpack.dev.conf.js",
-    "test": "mocha",
+    "test": "mocha ./test/**/*.test.ts",
     "test1": "jest"
   },
   "repository": {
@@ -46,6 +46,7 @@
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
     "mocha": "^2.2.5",
+    "mocha-junit-reporter": "^1.17.0",
     "style-loader": "^0.23.1",
     "ts-jest": "^23.10.5",
     "ts-loader": "^6.0.4",

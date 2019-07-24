@@ -1,6 +1,7 @@
 import { uniqueArray, getAllCombination, getPermutation, getAllPermutation} from '../src/array/index';
 import { factorial } from '../src/helper';
 
+console.log('run');
 
 describe('array', () => {
   it('uniqueArray array', () => {

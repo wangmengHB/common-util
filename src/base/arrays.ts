@@ -449,3 +449,13 @@ export function mapArrayOrNot<T, U>(items: T | T[], fn: (_: T) => U): U | U[] {
 export function asArray<T>(x: T | T[]): T[] {
 	return Array.isArray(x) ? x : [x];
 }
+
+/**
+ * Insert `insertArr` inside `target` at `insertIndex`.
+ * Please don't touch unless you understand https://jsperf.com/inserting-an-array-within-an-array
+ */
+export function arrayInsert<T>(target: T[], insertIndex: number, insertArr: T[]): T[] {
+	const before = target.slice(0, insertIndex);
+	const after = target.slice(insertIndex);
+	return before.concat(insertArr, after);
+}
