@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import { Event, Emitter, EventBufferer, EventMultiplexer, AsyncEmitter, IWaitUntil, PauseableEmitter } from 'vs/base/common/event';
-import { IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
-import * as Errors from 'vs/base/common/errors';
-import { timeout } from 'vs/base/common/async';
+import { Event, Emitter, EventBufferer, EventMultiplexer, AsyncEmitter, IWaitUntil, PauseableEmitter } from '../../src/base/event';
+import { IDisposable, DisposableStore } from '../../src/base/lifecycle';
+import * as Errors from '../../src/base/errors';
+import { timeout } from '../../src/base/async';
 
 namespace Samples {
 
@@ -37,7 +37,7 @@ namespace Samples {
 	}
 }
 
-suite('Event', function () {
+describe('Event', function () {
 
 	const counter = new Samples.EventCounter();
 
@@ -255,7 +255,7 @@ suite('Event', function () {
 	});
 });
 
-suite('AsyncEmitter', function () {
+describe('AsyncEmitter', function () {
 
 	test('event has waitUntil-function', async function () {
 
@@ -352,7 +352,7 @@ suite('AsyncEmitter', function () {
 	});
 });
 
-suite('PausableEmitter', function () {
+describe('PausableEmitter', function () {
 
 	test('basic', function () {
 		const data: number[] = [];
@@ -479,9 +479,9 @@ suite('PausableEmitter', function () {
 	});
 });
 
-suite('Event utils', () => {
+describe('Event utils', () => {
 
-	suite('EventBufferer', () => {
+	describe('EventBufferer', () => {
 
 		test('should not buffer when not wrapped', () => {
 			const bufferer = new EventBufferer();
@@ -555,7 +555,7 @@ suite('Event utils', () => {
 		});
 	});
 
-	suite('fromPromise', () => {
+	describe('fromPromise', () => {
 
 		test('should emit when done', async () => {
 			let count = 0;
@@ -582,7 +582,7 @@ suite('Event utils', () => {
 		});
 	});
 
-	suite('stopwatch', () => {
+	describe('stopwatch', () => {
 
 		test('should emit', () => {
 			const emitter = new Emitter<void>();
@@ -604,7 +604,7 @@ suite('Event utils', () => {
 		});
 	});
 
-	suite('buffer', () => {
+	describe('buffer', () => {
 
 		test('should buffer events', () => {
 			const result: number[] = [];
@@ -666,7 +666,7 @@ suite('Event utils', () => {
 		});
 	});
 
-	suite('EventMultiplexer', () => {
+	describe('EventMultiplexer', () => {
 
 		test('works', () => {
 			const result: number[] = [];

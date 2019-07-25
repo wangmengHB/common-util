@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import { guessMimeTypes, registerTextMime, suggestFilename } from 'vs/base/common/mime';
-import { URI } from 'vs/base/common/uri';
+import { guessMimeTypes, registerTextMime, suggestFilename } from 'src/base/mime';
+import { URI } from 'src/base/uri';
 
 suite('Mime', () => {
 

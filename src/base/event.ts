@@ -1,6 +1,6 @@
 import { onUnexpectedError } from './errors';
 import { once as onceFn } from './functional';
-import { Disposable, IDisposable, toDisposable, combinedDisposable, DisposableStore, isDisposable } from './lifecycle';
+import { Disposable, IDisposable, toDisposable, combinedDisposable, DisposableStore } from './lifecycle';
 import { LinkedList } from './linkedList';
 
 /*

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { memoize } from 'vs/base/common/decorators';
+import { memoize } from 'src/base/decorators';
 
 suite('Decorators', () => {
 	test('memoize should memoize methods', () => {

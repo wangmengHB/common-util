@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { VSBuffer, bufferToReadable, readableToBuffer, bufferToStream, streamToBuffer, writeableBufferStream } from 'vs/base/common/buffer';
-import { timeout } from 'vs/base/common/async';
+import { VSBuffer, bufferToReadable, readableToBuffer, bufferToStream, streamToBuffer, writeableBufferStream } from 'src/base/buffer';
+import { timeout } from 'src/base/async';
 
 suite('Buffer', () => {
 

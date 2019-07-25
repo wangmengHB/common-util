@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import { HistoryNavigator } from 'vs/base/common/history';
+import { HistoryNavigator } from 'src/base/history';
 
 suite('History Navigator', () => {
 

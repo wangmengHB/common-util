@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as processes from 'vs/base/common/processes';
+import * as processes from 'src/base/processes';
 
 suite('Processes', () => {
 	test('sanitizeProcessEnvironment', () => {

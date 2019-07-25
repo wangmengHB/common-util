@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import * as extpath from 'vs/base/common/extpath';
-import * as platform from 'vs/base/common/platform';
+import * as extpath from 'src/base/extpath';
+import * as platform from 'src/base/platform';
 
 suite('Paths', () => {
 

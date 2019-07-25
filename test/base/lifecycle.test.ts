@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import { IDisposable, dispose, ReferenceCollection, Disposable as DisposableBase, toDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, ReferenceCollection, Disposable as DisposableBase, toDisposable } from 'src/base/lifecycle';
 
 class Disposable implements IDisposable {
 	isDisposed = false;

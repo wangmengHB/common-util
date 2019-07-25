@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { FormattingOptions, Edit } from 'vs/base/common/jsonFormatter';
-import { setProperty, removeProperty } from 'vs/base/common/jsonEdit';
+import { FormattingOptions, Edit } from 'src/base/jsonFormatter';
+import { setProperty, removeProperty } from 'src/base/jsonEdit';
 import * as assert from 'assert';
 
 suite('JSON - edits', () => {

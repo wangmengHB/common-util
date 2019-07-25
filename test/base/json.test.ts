@@ -5,8 +5,8 @@
 import * as assert from 'assert';
 import {
 	SyntaxKind, createScanner, parse, Node, ParseError, parseTree, ParseErrorCode, ParseOptions, ScanError
-} from 'vs/base/common/json';
-import { getParseErrorMessage } from 'vs/base/common/jsonErrorMessages';
+} from 'src/base/json';
+import { getParseErrorMessage } from 'src/base/jsonErrorMessages';
 
 function assertKinds(text: string, ...kinds: SyntaxKind[]): void {
 	let scanner = createScanner(text);

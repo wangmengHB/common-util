@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import { IMatch } from 'vs/base/common/filters';
-import { matchesFuzzyOcticonAware, parseOcticons } from 'vs/base/common/octicon';
+import { IMatch } from 'src/base/filters';
+import { matchesFuzzyOcticonAware, parseOcticons } from 'src/base/octicon';
 
 export interface IOcticonFilter {
 	// Returns null if word doesn't match.

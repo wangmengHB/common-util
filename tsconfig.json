@@ -2,7 +2,7 @@
   "compilerOptions": {
 		"suppressImplicitAnyIndexErrors": true,
 		"noImplicitReturns": true,
-		"noUnusedLocals": true,
+		// "noUnusedLocals": true,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
 		"strictBindCallApply": true,
@@ -13,7 +13,7 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "jsx": "preserve",
-    "noImplicitAny": true,
+    // "noImplicitAny": true,
     "target": "es6",
     "module": "commonjs",
     "lib": [
@@ -24,11 +24,17 @@
     "removeComments": false,
 		"preserveConstEnums": true,
 		"sourceMap": false,
-		"outDir": "../out"
+    "outDir": "../out",
+    "baseUrl": ".",
+    "paths": {
+			"src/*": [
+				"./src/*"
+			]
+		},
   },
   "include": [
-    "./src/**/*"
-  ],
+		"**/*.ts"
+	],
   "exclude": [
     "node_modules",
     "lib",

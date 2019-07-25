@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as labels from 'vs/base/common/labels';
-import * as platform from 'vs/base/common/platform';
+import * as labels from 'src/base/labels';
+import * as platform from 'src/base/platform';
 
 suite('Labels', () => {
 	test('shorten - windows', () => {

@@ -14,7 +14,7 @@ module.exports = {
         library: 'CommonUtil'
     },
     resolve: {
-      extensions: ['.ts', '.js', '.json']
+      extensions: ['.ts', '.js', '.json'],
     },
     module: {
         rules: [

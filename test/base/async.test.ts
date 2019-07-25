@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as async from 'vs/base/common/async';
-import { isPromiseCanceledError } from 'vs/base/common/errors';
-import { URI } from 'vs/base/common/uri';
+import * as async from 'src/base/async';
+import { isPromiseCanceledError } from 'src/base/errors';
+import { URI } from 'src/base/uri';
 
 suite('Async', () => {
 

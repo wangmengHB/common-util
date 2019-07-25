@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import { URI, UriComponents } from 'vs/base/common/uri';
-import { isWindows } from 'vs/base/common/platform';
+import { URI, UriComponents } from 'src/base/uri';
+import { isWindows } from 'src/base/platform';
 
 
 suite('URI', () => {

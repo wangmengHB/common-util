@@ -28,8 +28,8 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import * as assert from 'assert';
-import * as path from 'vs/base/common/path';
-import { isWindows } from 'vs/base/common/platform';
+import * as path from 'src/base/path';
+import { isWindows } from 'src/base/platform';
 
 suite('Paths (Node Implementation)', () => {
 	test('join', () => {

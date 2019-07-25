@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { SmoothScrollingOperation, SmoothScrollingUpdate } from 'vs/base/common/scrollable';
+import { SmoothScrollingOperation, SmoothScrollingUpdate } from 'src/base/scrollable';
 
 class TestSmoothScrollingOperation extends SmoothScrollingOperation {
 
